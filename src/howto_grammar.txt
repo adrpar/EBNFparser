@@ -1,0 +1,36 @@
+How to write a grammar:
+
+following the rules of writing grammar is very easy… writing good grammar is terribly difficult
+
+these are the rules of writing a grammar:
+
+* a grammar describes 1 or more rules.
+* a rule is defined as:  symbol ::= expression
+* symbol 'root' *must* be defined, this is the starting point.
+* each expression is defined as 1 or more symbols and/or terminal nodes
+* a terminal node is contained within single quotes ('') and may not contain spaces
+* a terminal node is expressed by a regular expression (regex)
+* equal symbols on the left-hand-side (LHS) of a rule are interpreted as boolean OR
+
+example 1:
+	animal ::= 'horse'
+	animal ::= 'dog'
+	animal ::= 'cow'
+
+	is read as: animal = 'horse' OR 'dog' OR 'cow'
+
+example 2: (recursion)
+	animals ::= animal animals
+	animals ::= animal
+
+	is read as: animals =  any endless combination of animals OR a single animal
+	note that the first rule's expression is 'animal animals', if we were writing 'animals animal' we would
+	go endlessly recursive because the expression is evaluated left-to-right (and since animals equals animals
+	we would have a problem)
+
+example 3: (regex)
+	digit ::= '[0-9]'	is read as any character '0'..'9'
+	number ::= '[0-9]+'	is read as one or more characters '0'..'9'
+
+	this makes it easy to stuff like:
+	variable ::= '[a-zA-Z][a-zA-Z0-9]*'		(a variable starting with a alphanumeric)

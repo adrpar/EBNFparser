@@ -1,0 +1,73 @@
+root ::= [ timeSubPhrase ] [ spaceSubPhrase ] [ spectralSubPhrase ] [ redshiftSubPhrase ]
+
+timeSubPhrase ::= timeInterval | startTime | stopTime | time
+
+timeInterval ::= "TimeInterval" [ fillfactor ] [ timescale ] [ refpos ] { nakedTime } [ timestamp ] [ timeUnit ] [ error ] [ resolution ] [ pixelSize ]
+startTime ::= "StartTime" [ fillfactor ] [ timescale ] [ refpos ] { nakedTime } [ timestamp ] [ timeUnit ] [ error ] [ resolution ] [ pixelSize ]
+stopTime ::= "StopTime" [ fillfactor ] [ timescale ] [ refpos ] { nakedTime } [ timestamp ] [ timeUnit ] [ error ] [ resolution ] [ pixelSize ]
+time ::= "Time" [ fillfactor ] [ timescale ] [ refpos ] { nakedTime } [ timestamp ] [ timeUnit ] [ error ] [ resolution ] [ pixelSize ]
+fillfactor ::= "fillfactor" number
+timescale ::= RE<UTC|nil|TDB|TT|TEB|LST|TCG|IAT|ET|TCB|TAI|TD>
+refpos ::= RE<LOCAL_GROUP_CENTER|GALACTIC_CENTER|UNKNOWNRefPos|EMBARYCENTER|HELIOCENTER|CoordRefPos|RELOCATABLE|BARYCENTER|TOPOCENTER|GEOCENTER|JUPITER|MERCURY|NEPTUNE|URANUS|SATURN|PLUTO|VENUS|LSRD|LSRK|MOON|MARS|LSR>
+nakedTime ::= isoTimeLiteral | jdLiteral | mjdLiteral
+isoTimeLiteral ::= RE<\d\d\d\d-?\d\d-?\d\d(T\d\d:?\d\d:?\d\d(\.\d*)?Z?)?>
+jdLiteral ::= "JD" exactNumericLiteral
+mjdLiteral ::= "MJD" exactNumericLiteral
+exactNumericLiteral ::= RE<[+-]?\d+(\.(\d+)?)?|[+-]?\.\d+>
+timestamp ::= "Time" nakedTime
+timeUnit ::= "unit" _timeUnitWord
+error ::= "Error" number { number }
+resolution ::= "Resolution" number { number }
+pixelSize ::= "PixSize" number { number }
+_timeUnitWord ::= RE<cy|yr|a|s|d>
+
+spaceSubPhrase ::= positionInterval | position | atomicGeometry | not | difference | compoundString
+
+positionInterval ::= "PositionInterval" [ fillfactor ] frame [ refpos ] [ flavor ] { number } [ positionSpec ] [ spaceUnit ] [ error ] [ resolution ] [ size ] [ pixelSize ] [ velocityInterval ]
+position ::= "Position" frame [ refpos ] [ flavor ] [ { number } ] [ spaceUnit ] [ error ] [ resolution ] [ size ] [ pixelSize ] [ velocityInterval ]
+atomicGeometry ::= region [ fillfactor ] frame [ refpos ] [ flavor ] { number } [ positionSpec ] [ spaceUnit ] [ error ] [ resolution ] [ size ] [ pixelSize ] [ velocityInterval ]
+not ::= "Not" [ fillfactor ] frame [ refpos ] [ flavor ] "(" _compoundGeoOperand ")" [ positionSpec ] [ spaceUnit ] [ error ] [ resolution ] [ size ] [ pixelSize ] [ velocityInterval ]
+frame ::= eqFrame | "J2000" | "B1950" | "ICRS" | "GALACTIC" | "GALACTIC_I" | "GALACTIC_II" | "SUPER_GALACTIC" | "GEO_C" | "GEO_D" | "UNKNOWNFrame"
+eqFrame ::= eqFrameName [ eqSpec ]
+eqFrameName ::= "FK5" | "FK4" | "ECLIPTIC"
+eqSpec ::= RE<[BJ][0-9]+([.][0-9]*)?>
+flavor ::= RE<UNITSPHER|SPHER2|SPHER3|CART3|CART2|CART1>
+positionSpec ::= "Position" [ { number } ]
+spaceUnit ::= "unit" _spaceUnitWord { _spaceUnitWord }
+size ::= "Size" number { number }
+velocityInterval ::= "VelocityInterval" [ fillfactor ] { number } [ velocitySpec ] [ velocityUnit ] [ error ] [ resolution ] [ pixelSize ]
+velocitySpec ::= "Velocity" number { number }
+velocityUnit ::= "unit" _spaceUnitWord "/" _timeUnitWord
+region ::= "AllSky" | "Circle" | "Ellipse" | "Box" | "Polygon" | "Convex"
+difference ::= "Difference" [ fillfactor ] frame [ refpos ] [ flavor ] "(" _compoundGeoOperand _compoundGeoOperand ")" [ positionSpec ] [ spaceUnit ] [ error ] [ resolution ] [ size ] [ pixelSize ] [ velocityInterval ]
+compoundString ::= unionIntersect [ fillfactor ] frame [ refpos ] [ flavor ] "(" _compoundGeoOperand _compoundGeoOperand { _compoundGeoOperand } ")" [ positionSpec ] [ spaceUnit ] [ error ] [ resolution ] [ size ] [ pixelSize ] [ velocityInterval ]
+_spaceUnitWord ::= RE<arcsec|arcmin|rad|Mpc|kpc|deg|mm|km|pc|AU|m>
+_compoundGeoOperand ::= regionNumber | _compoundGeoExpression
+regionNumber ::= region { number }
+_compoundGeoExpression ::= compoundGeo
+compoundGeo ::= _compoundGeoExprUnary | _compoundGeoExprBinary | _compoundGeoExprNary
+_compoundGeoExprUnary ::= "Not" "(" _compoundGeoOperand ")"
+_compoundGeoExprBinary ::= "Difference" "(" _compoundGeoOperand _compoundGeoOperand ")"
+_compoundGeoExprNary ::= unionIntersect "(" _compoundGeoOperand _compoundGeoOperand { _compoundGeoOperand } ")"
+unionIntersect ::= "Union" | "Intersection"
+
+spectralSubPhrase ::= spectralInterval | spectral
+
+spectralInterval ::= "SpectralInterval" [ fillfactor ] [ refpos ] { number } [ spectralSpec ] [ spectralUnit ] [ error ] [ resolution ] [ pixelSize ]
+spectralSpec ::= "Spectral" number
+spectralUnit ::= "unit" _spectralUnitWord
+spectral ::= "Spectral" [ refpos ] [ { number } ] [ spectralUnit ] [ error ] [ resolution ] [ pixelSize ]
+_spectralUnitWord ::= RE<Angstrom|GHz|MeV|MHz|keV|Hz|nm|mm|um|eV|m>
+
+redshiftSubPhrase ::= redshiftInterval | redshift
+
+redshiftInterval ::= "RedshiftInterval" [ fillfactor ] [ refpos ] [ redshiftType ] [ dopplerdef ] { number } [ redshiftSpec ] [ redshiftUnit ] [ error ] [ resolution ] [ pixelSize ]
+redshift ::= "Redshift" [ refpos ] [ redshiftType ] [ dopplerdef ] [ { number } ] [ redshiftUnit ] [ error ] [ resolution ]
+redshiftType ::= RE<VELOCITY|REDSHIFT>
+dopplerdef ::= RE<OPTICAL|RADIO|RELATIVISTIC>
+redshiftSpec ::= "Redshift" number
+redshiftUnit ::= "unit" velocityUnitNil
+velocityUnitNil ::= velocityUnitWord | "nil"
+velocityUnitWord ::= _spaceUnitWord "/" _timeUnitWord
+
+number ::= RE<[0-9]+>

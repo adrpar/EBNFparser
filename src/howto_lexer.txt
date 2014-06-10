@@ -1,0 +1,43 @@
+
+"In computer science, lexical analysis is the process of converting a sequence of characters into a sequence of tokens. A program or function which performs lexical analysis is called a lexical analyzer, lexer or scanner. A lexer often exists as a single function which is called by a parser or another function." - Wikipedia
+
+Any lexer you write for use with the pragmatic parser class must extend from class 'Lexer'. Within the new class you must implement the 'tokenize' method which is fed the text to parse and returns an array with tokens.
+
+Tokens are defined as the elements in the language.
+
+Tokenizing the SQL expression 'SELECT * FROM authors WHERE age = 36' could result in:
+Array
+(
+    [0] => SELECT
+    [1] => *
+    [2] => FROM
+    [3] => authors
+    [4] => WHERE
+    [5] => age
+    [6] => =
+    [7] => 36
+)
+
+The most basic lexer for simple queries could be as follows:
+
+  class SQLLexer extends Lexer {
+    protected function tokenize($text) {
+      return explode(' ', $text);
+    }
+  }
+
+This example however will not be sufficient for complex queries and even simple ones can break easily:
+SELECT * FROM authors WHERE lastname='Dickens' would result in:
+Array
+(
+    [0] => SELECT
+    [1] => *
+    [2] => FROM
+    [3] => authors
+    [4] => WHERE
+    [5] => lastname='Dickens'		<-- input string omits space-characters around equalsign
+)
+
+Complexity of your lexer depends on complexity of the text you feed it.
+The included SQL lexer based on regular expressions does a nice job on very complex queries.
+

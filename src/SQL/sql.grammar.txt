@@ -1,0 +1,101 @@
+root ::= query
+
+query ::= deletequery
+query ::= selectquery
+
+selectquery ::= selectstatement fieldlist from dataref where searchcondition
+selectquery ::= selectstatement fieldlist from dataref
+selectquery ::= selectstatement fieldlist
+
+deletequery ::= deletestatement from tableref where searchcondition
+deletequery ::= deletestatement from tableref
+
+deletestatement ::= "DELETE"
+selectstatement ::= "SELECT"
+
+fieldlist ::= field listseparator fieldlist
+fieldlist ::= field 
+
+listseparator ::= comma
+
+
+field ::= RE<[*]>
+field ::= string
+
+where ::= "WHERE"
+
+
+OR ::= "OR"
+AND ::= "AND"
+NOT ::= "NOT"
+IN ::= "IN"
+
+searchcondition ::= booleanvalueexpr
+
+
+booleanvalueexpr ::= booleanterm OR booleanvalueexpr
+booleanvalueexpr ::= booleanterm
+
+booleanterm ::= booleanfactor AND booleanterm
+booleanterm ::= booleanfactor
+
+booleanfactor ::= NOT booleanprimary
+booleanfactor ::= booleanprimary
+
+booleanprimary ::= leftparen searchcondition rightparen
+booleanprimary ::= predicate
+
+
+predicate ::= comparisonpredicate
+predicate ::= inpredicate
+
+
+inpredicate ::= variable IN leftparen inlist rightparen
+inlist ::= factor listseparator inlist
+inlist ::= factor
+
+
+comparisonpredicate ::= expression compop expression
+
+compop ::= RE<<>|<=>|>=|<=|==|=|!=|<|>>
+
+expression ::= term addop expression
+expression ::= term
+
+addop ::= RE<[+-]>
+
+term ::= factor multop term
+term ::= factor
+
+multop ::= RE<[*]>
+
+factor ::= text
+factor ::= variable
+factor ::= number
+
+
+variable ::= RE<[a-zA-Z][a-zA-Z0-9_]*>
+
+leftparen ::= RE<\(>
+rightparen ::= RE<\)>
+
+
+from ::= 'FROM'
+dataref ::= selectquery
+dataref ::= tableref
+tableref ::= databasename period tablename
+tableref ::= tablename
+tablename ::= string
+databasename ::= string
+
+alphanumeric ::= RE<[a-zA-Z]>
+
+
+string ::= RE<[a-zA-Z]+>
+text ::= RE<\".+\">
+
+period ::= RE<[.]>
+comma ::= RE<[,]>
+
+digit ::= RE<[0-9]>
+number ::= RE<[0-9]+>

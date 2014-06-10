@@ -1,0 +1,14 @@
+root ::= group
+
+group ::= openparen items closeparen
+
+items ::= group items
+items ::= item items
+
+item ::= RE<[^{}]+>
+
+openparen ::= RE<\{>
+closeparen ::= RE<\}>
+
+
+

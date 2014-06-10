@@ -1,0 +1,12 @@
+character = RE<[a-zA-Z0-9\[\]\{\}\(\)<>\'\"=\|\.,;_]>
+space = RE<\s>
+identifier = RE<[a-zA-Z][a-zA-Z0-9_]*>
+terminal = ( "'" character { character } "'" ) | ( '"' character { character } '"' )
+ 
+lhs = identifier 
+rhs = identifier | terminal | ( "[" rhs "]" ) | ( "{" rhs "}" ) | ( "(" rhs ")" ) | ( "|" rhs ) | ( space rhs )
+ 
+rule = lhs ( "::=" | "=" ) { rhs }
+grammar = { rule } 
+
+root = grammar
