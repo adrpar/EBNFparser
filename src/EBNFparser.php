@@ -204,7 +204,6 @@
 					if(empty($match)) {
 						return array();
 					} else {
-						//$node = $this->createNode($subrule->getName(), "GROUP", $match);
 						return array($subrule->getName() => $match);
 					}
 					break;
