@@ -96,29 +96,12 @@
 				}
 
 				if($symbol->getType() === "TERMRULE") {
-					if(array_key_exists($symbol->getValue(), $result)) {
-						//determine a possible array key
-						$count = 1;
-						while(array_key_exists($symbol->getValue() . "_" . $count, $result)) {
-							$count += 1;
-						}
-						$result[$symbol->getValue() . "_" . $count] = $match;
-					} else {
-						$result[$symbol->getValue()] = $match;
-					}
+					$result[] = $this->createNode($symbol->getValue(), $match);
 				} else {
 					//some cleaning work to get a nicer representation at the end
 					if(!is_array($match)) {
-						if(array_key_exists($rule->getName(), $result)) {
-							//determine a possible array key
-							$count = 1;
-							while(array_key_exists($rule->getName() . "_" . $count, $result)) {
-								$count += 1;
-							}
-							$result[$rule->getName() . "_" . $count] = $match;
-						} else {
-							$result[$rule->getName()] = $match;
-						}
+						$result[] = $this->createNode($rule->getName(), $match);
+
 						continue;
 					} else {
 						$result[] = $match;
@@ -153,7 +136,7 @@
 					if($symbol->getValue() === $this->lexer->getToken($cursor)) {
 						$token = $this->lexer->getToken($cursor);
 						$cursor += 1;
-						return $token;
+						return $this->createNode("STRING", $token);
 					}
 					break;
 
@@ -162,7 +145,7 @@
 					if(preg_match("/{$symbol->getValue()}/sm", $this->lexer->getToken($cursor))) {
 						$token = $this->lexer->getToken($cursor);
 						$cursor += 1;
-						return $token;
+						return $this->createNode("REGEX", $token);
 					}
 					break;
 
@@ -172,7 +155,7 @@
 						$match = $this->matchRule($alterRule, $cursor);
 
 						if(!empty($match)) {
-							return $match;
+							return $this->createNode($alterRule, $match);
 						}
 					}
 					break;
@@ -190,7 +173,7 @@
 							break;
 						}
 
-						$match[] = $currMatch;
+						$match[] = $this->createNode($symbol->getValue(), $currMatch);
 					}
 					return $match;
 					break;
@@ -204,7 +187,8 @@
 					if(empty($match)) {
 						return array();
 					} else {
-						return array($subrule->getName() => $match);
+						$node = $this->createNode($subrule->getName(), "GROUP", $match);
+						return $node;
 					}
 					break;
 
@@ -221,8 +205,14 @@
 			$node = array();
 
 			$node['expr_type'] = $name;
-			$node['base_name'] = $value;
-			$node['subtree'] = $subtree;
+
+			if(is_array($value)) {
+				$node['base_name'] = "";
+				$node['subtree'] = $value;
+			} else {
+				$node['base_name'] = $value;
+				$node['subtree'] = $subtree;
+			}
 
 			return $node;
 		}
