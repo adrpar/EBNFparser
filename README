@@ -4,7 +4,7 @@ COPYRIGHT (c) 2014 Adrian M. Partl
 built on: pragmatic-parser.php (https://code.google.com/p/pragmatic-parser/):
           COPYRIGHT (c) 2011 Richard Keizer
 
-This is a pragmatic attemt to build a EBNF parser for PHP, following the spirit
+This is a pragmatic attempt to build a EBNF parser for PHP, following the spirit
 of the underlying original project: pragmatic-parser.php by Richard Keizer.
 
 Please see the examples for inspiration on how to use this piece of code.

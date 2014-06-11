@@ -81,10 +81,6 @@
 		}
 		
 		protected function tokenizeRHS($text) {
-			$gather = false;
-			$alterGather = false;
-			$phrase = false;
-			$alterPhrase = false;
 			$splitArray = array();
 
 			$cursor = 0;
